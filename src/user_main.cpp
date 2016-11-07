@@ -63,20 +63,21 @@ unsigned char toByte(int *start)
 	
 	return result;
 }
+
+
 /*
  * this task will read the uart and echo back all characters entered
  */
 void helloTask(void *pvParameters)
 {
+	gpio.modeInput();
+	gpio.enablePullUp(true);	// Pull pin high
+
 	vTaskDelay(5000 / portTICK_RATE_MS);
 	printf("Dropping bus\n");
 		
-	// We pull bus high for a while
-	gpio.modeOutput();
-	gpio.write(true);	
-	vTaskDelay(250 / portTICK_RATE_MS);
-	
-	// Kick the sensor alive
+	// Drag bus low
+	gpio.modeOutput();	
 	gpio.write(false);	
     os_delay_us(20000);
 	
@@ -85,10 +86,8 @@ void helloTask(void *pvParameters)
 	
 	// .. and release the bus, so the sensor could drive it for data
 	gpio.modeInput();
-	gpio.enablePullUp(true);
 	
 	// Wait unit it goes low
-//	while(!gpio.read());
 	lastTs = WDEV_NOW();
 	gpio.attachInterruptHandler(myisr,fdv::GPIO_PIN_INTR_ANYEDGE);
 	
@@ -149,15 +148,10 @@ void helloTask(void *pvParameters)
 
 //
 //
-// Snygga till!
-
-
-
-
-
-
-
-
+// Snyggab till initiering
+//
+// Övergång från driv till lyssnande
+// Objektifiera
 
 
 /*
